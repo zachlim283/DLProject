@@ -35,6 +35,8 @@ def preprocess_data(data: np.array, input_rate: int, output_rate: int, start_tim
     for i in range(0, len(data)-ratio, ratio):
         downsampled_data.append(np.mean(data[i : i + ratio], axis=0))
     data = np.array(downsampled_data)
+    data = data[:, 1:]
+    print(data, data.shape)
 
     # Remove Outliers
     # TODO
@@ -78,12 +80,13 @@ def create_train_test_data(dataset_dir: os.path, input_rate: int, output_rate: i
                 # Create Windowed Timeseries
                 temp_x = create_windowed_timeseries(temp_x, output_rate, window_size, interval)
                 
-                # Create Corresponding Labels - consider if exercise is done correctly
+                # Create Corresponding Labels - consider if exercise is done correctly (0: correct, 1: wrong)
                 is_correct = file_name[6]
                 if (is_correct == '0'):
                     temp_y = np.array([ACTIONS_UPPERLIMBS[action_name]] * temp_x.shape[0])
                 else:
                     temp_y = np.array([ACTIONS_UPPERLIMBS["NONE"]] * temp_x.shape[0])
+                    # temp_y = np.array([ACTIONS_UPPERLIMBS[f"N_{action_name}"]] * temp_x.shape[0])
                 
                 if train_X is None:
                     train_X = temp_x
@@ -112,6 +115,7 @@ def save_data(data: np.array, filename: str):
 
 if __name__ == '__main__':
     ACTIONS_UPPERLIMBS = { 'EFE': 0, 'EAH': 1, 'SQZ': 2, 'NONE': 3 }
+    # ACTIONS_UPPERLIMBS = { 'EFE': 0, 'EAH': 1, 'SQZ': 2, 'N_EFE': 3, 'N_EAH': 4, 'N_SQZ': 5 }
     ACTIONS_LOWERLIMBS = { 'KFE': 0, 'SQT': 1, 'HAA': 2, 'GAT': 3, 'GIS': 4, 'GHT': 5, 'NONE': 6 }
     RAW_DATASET_DIR = os.path.join('.', "PHYTMO\\inertial\\upper")
     GEN_DATASET_DIR = os.path.join('.', 'Generated_Datasets')
@@ -149,19 +153,20 @@ if __name__ == '__main__':
                                                                 window_size=window_size,
                                                                 interval=interval, 
                                                                 controller_side=controller_side)
-
+    print(train_data.shape)
+    print(test_data.shape)
     # Save to root dataset folder for active use
-    save_data(train_data, os.path.join(GEN_DATASET_DIR, f'train_data_{dataset_ver}'))
-    save_data(train_labels, os.path.join(GEN_DATASET_DIR, f'train_labels_{dataset_ver}'))
-    save_data(test_data, os.path.join(GEN_DATASET_DIR, f'test_data_{dataset_ver}'))
-    save_data(test_labels, os.path.join(GEN_DATASET_DIR, f'test_labels_{dataset_ver}'))
+    save_data(train_data, os.path.join(GEN_DATASET_DIR, f'train_data_noMag{dataset_ver}'))
+    save_data(train_labels, os.path.join(GEN_DATASET_DIR, f'train_labels_noMag{dataset_ver}'))
+    save_data(test_data, os.path.join(GEN_DATASET_DIR, f'test_data_noMag{dataset_ver}'))
+    save_data(test_labels, os.path.join(GEN_DATASET_DIR, f'test_labels_noMag{dataset_ver}'))
         
 
     '''
     Train Data Shape: (n, 60, 10)
         n:  No. of samples
         60: 3s window of data after downsampling
-        10: Values from MPU (gx,gy,gz,ax,ay,az,qw,qx,qy,qz)
+        10: Values from MPU (gx,gy,gz,ax,ay,az,qw,qx,qy,qz)c
 
     PHYTMO Dataset Filename Format - GNNEEELP_S:
         G: range of age of the volunteer, 
