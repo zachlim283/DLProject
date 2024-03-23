@@ -36,7 +36,6 @@ def preprocess_data(data: np.array, input_rate: int, output_rate: int, start_tim
         downsampled_data.append(np.mean(data[i : i + ratio], axis=0))
     data = np.array(downsampled_data)
     data = data[:, 1:]
-    print(data, data.shape)
 
     # Remove Outliers
     # TODO
@@ -98,14 +97,16 @@ def create_train_test_data(dataset_dir: os.path, input_rate: int, output_rate: i
 
                 print(f'Completed {file_name}, {train_X.shape=}, {train_y.shape=}')
     
-    # train-test dataset split
-    print("Splitting dataset into train-test...")
-    X_train, X_test = train_test_split(train_X, test_size=0.2, random_state=42)
-    Y_train, Y_test = train_test_split(train_y, test_size=0.2, random_state=42)
-    print(f'Train Set, {X_train.shape=}, {X_test.shape=}')
-    print(f'Test Set, {Y_train.shape=}, {Y_test.shape=}')
+    print("Splitting dataset into train-test-val of 80-20-10 ratio...")
+    # Split the data and labels into training and temporary set
+    X_train_val, X_test, Y_train_val, Y_test = train_test_split(train_X, train_y, test_size=0.2, random_state=42)
+    # Split the temporary set into training and validation
+    X_train, X_val, Y_train, Y_val = train_test_split(X_train_val, Y_train_val, test_size=0.125, random_state=42)
     
-    return X_train, Y_train, X_test, Y_test
+    # X_train, X_test = train_test_split(train_X, test_size=0.2, random_state=42)
+    # Y_train, Y_test = train_test_split(train_y, test_size=0.2, random_state=42)
+    
+    return X_train, Y_train, X_test, Y_test, X_val, Y_val
 
 
 def save_data(data: np.array, filename: str):
@@ -146,20 +147,24 @@ if __name__ == '__main__':
     dataset_ver = f'{window_size}w{str(interval).replace(".", "")}s_{controller_side}'
 
     # Import data from CSV and create Windowed Timeseries
-    train_data, train_labels, test_data, test_labels = create_train_test_data(dataset_dir=RAW_DATASET_DIR,
-                                                                input_rate=RAW_DATA_RATE,
-                                                                output_rate=target_sample_rate,
-                                                                start_time=start_time, 
-                                                                window_size=window_size,
-                                                                interval=interval, 
-                                                                controller_side=controller_side)
-    print(train_data.shape)
-    print(test_data.shape)
+    train_data, train_labels, test_data, test_labels, val_data, val_labels = create_train_test_data(dataset_dir=RAW_DATASET_DIR,
+                                                                                input_rate=RAW_DATA_RATE,
+                                                                                output_rate=target_sample_rate,
+                                                                                start_time=start_time, 
+                                                                                window_size=window_size,
+                                                                                interval=interval, 
+                                                                                controller_side=controller_side)
+    print(f'Train Set, {train_data.shape=}, {train_labels.shape=}')
+    print(f'Test Set, {test_data.shape=}, {test_labels.shape=}')
+    print(f'Val Set, {val_data.shape=}, {val_labels.shape=}')
+    
     # Save to root dataset folder for active use
-    save_data(train_data, os.path.join(GEN_DATASET_DIR, f'train_data_noMag{dataset_ver}'))
-    save_data(train_labels, os.path.join(GEN_DATASET_DIR, f'train_labels_noMag{dataset_ver}'))
-    save_data(test_data, os.path.join(GEN_DATASET_DIR, f'test_data_noMag{dataset_ver}'))
-    save_data(test_labels, os.path.join(GEN_DATASET_DIR, f'test_labels_noMag{dataset_ver}'))
+    save_data(train_data, os.path.join(GEN_DATASET_DIR, f'train_data_{dataset_ver}'))
+    save_data(train_labels, os.path.join(GEN_DATASET_DIR, f'train_labels_{dataset_ver}'))
+    save_data(test_data, os.path.join(GEN_DATASET_DIR, f'test_data_{dataset_ver}'))
+    save_data(test_labels, os.path.join(GEN_DATASET_DIR, f'test_labels_{dataset_ver}'))        
+    save_data(val_data, os.path.join(GEN_DATASET_DIR, f'val_data_{dataset_ver}'))
+    save_data(val_labels, os.path.join(GEN_DATASET_DIR, f'val_labels_{dataset_ver}'))
         
 
     '''
