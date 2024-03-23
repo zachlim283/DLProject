@@ -118,7 +118,7 @@ if __name__ == '__main__':
     ACTIONS_UPPERLIMBS = { 'EFE': 0, 'EAH': 1, 'SQZ': 2, 'NONE': 3 }
     # ACTIONS_UPPERLIMBS = { 'EFE': 0, 'EAH': 1, 'SQZ': 2, 'N_EFE': 3, 'N_EAH': 4, 'N_SQZ': 5 }
     ACTIONS_LOWERLIMBS = { 'KFE': 0, 'SQT': 1, 'HAA': 2, 'GAT': 3, 'GIS': 4, 'GHT': 5, 'NONE': 6 }
-    RAW_DATASET_DIR = os.path.join('.', "PHYTMO\\inertial\\upper")
+    RAW_DATASET_DIR = os.path.join('.', "PHYTMO", "inertial", "upper")
     GEN_DATASET_DIR = os.path.join('.', 'Generated_Datasets')
     RAW_DATA_RATE = 100     # 100 Hz for the gyroscopes and accelerometers and to 20 Hz for the magnetometers
 
