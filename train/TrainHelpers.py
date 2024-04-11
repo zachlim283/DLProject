@@ -8,10 +8,10 @@ from tqdm.notebook import tqdm
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
 from torch.utils.tensorboard import SummaryWriter
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class EarlyStopper:
     def __init__(self, patience=1, min_delta=0):
@@ -56,7 +56,7 @@ def train_model(Autoencoder, train_dataloader, val_dataloader, val_dataset, n_in
         autoencoder.train()
         for X_batch, _ in tqdm(train_dataloader):
             X = X_batch.to(device)
-
+            # print(X.shape)
             pred = autoencoder(X)
             train_loss = autoencoder.loss(pred, X)
 

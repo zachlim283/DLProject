@@ -103,9 +103,6 @@ def create_train_test_data(dataset_dir: os.path, input_rate: int, output_rate: i
     # Split the temporary set into training and validation
     X_train, X_val, Y_train, Y_val = train_test_split(X_train_val, Y_train_val, test_size=0.125, random_state=42)
     
-    # X_train, X_test = train_test_split(train_X, test_size=0.2, random_state=42)
-    # Y_train, Y_test = train_test_split(train_y, test_size=0.2, random_state=42)
-    
     return X_train, Y_train, X_test, Y_test, X_val, Y_val
 
 
@@ -130,7 +127,7 @@ if __name__ == '__main__':
     target_sample_rate = 20         # Downsample data to this rate (Hz)
     window_size = 3                 # Length of window in seconds
     interval = 0.5                  # Time between windows in seconds
-    controller_side = 'Larm'        # Create dataset for Larm/Lforearm/Rarm/Rforearm
+    controller_side = 'Rarm'        # Create dataset for Larm/Lforearm/Rarm/Rforearm
 
     ############################################################################
     ############################################################################
