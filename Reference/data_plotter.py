@@ -1,3 +1,4 @@
+import os
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,26 +18,39 @@ def load_data(fp: str, header=True):
 
 
 if __name__ == "__main__":
-    IMUdata = load_data('PHYTMO/inertial/upper/A/Larm/A01EAH1_2.csv')  
-    start_idx = 700
-    end_idx = -1000
+    ROOT_DIR = os.path.join('.', 'PHYTMO/inertial/upper')
+    ACTIONS_UPPERLIMBS = { 'EFE': 0, 'EAH': 1, 'SQZ': 2, 'NONE': 3 }
+    controller_side = 'Larm'
 
-    # Extract Data
-    gyr = IMUdata[start_idx:end_idx, (1, 2, 3)].astype('float64')
-    acc = IMUdata[start_idx:end_idx, (4, 5, 6)].astype('float64')
-    quat = IMUdata[start_idx:end_idx, (7, 8, 9)].astype('float64')
+    for age_group in os.listdir(ROOT_DIR):
+        # traverse through each age group folder to obtain data
+        data_directory = os.path.join(ROOT_DIR, age_group, controller_side)
+        
+        for file_name in os.listdir(data_directory):
+            action_name = file_name[3:6]
+            if action_name in ACTIONS_UPPERLIMBS.keys():
+                f_path = os.path.join(data_directory, file_name)
 
-    # Plot
-    fig, (ax1, ax2, ax3) = plt.subplots(3)
-    fig.suptitle('Recorded Raw Data')
-    
-    ax1.plot(gyr)
-    ax1.set_title('Gyro Data')
+                IMUdata = load_data(f_path)  
+                start_idx = 0
+                end_idx = None
 
-    ax2.plot(acc)
-    ax2.set_title('Accel Data')
-    
-    ax3.plot(quat)
-    ax3.set_title('Mag Data')
+                # Extract Data
+                gyr = IMUdata[start_idx:end_idx, (1, 2, 3)].astype('float64')
+                acc = IMUdata[start_idx:end_idx, (4, 5, 6)].astype('float64')
+                quat = IMUdata[start_idx:end_idx, (7, 8, 9)].astype('float64')
 
-    plt.show()
+                # Plot
+                fig, (ax1, ax2, ax3) = plt.subplots(3)
+                fig.suptitle(f'Recorded Raw Data {file_name}')
+                
+                ax1.plot(gyr)
+                ax1.set_title('Gyro Data')
+
+                ax2.plot(acc)
+                ax2.set_title('Accel Data')
+                
+                ax3.plot(quat)
+                ax3.set_title('Mag Data')
+
+                plt.show()

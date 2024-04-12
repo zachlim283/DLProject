@@ -14,7 +14,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class EarlyStopper:
-    def __init__(self, patience=1, min_delta=0):
+    def __init__(self, patience, min_delta):
         self.patience = patience
         self.min_delta = min_delta
         self.counter = 0
@@ -26,7 +26,9 @@ class EarlyStopper:
             self.counter = 0
         elif validation_loss > (self.min_validation_loss + self.min_delta):
             self.counter += 1
+            print(f'ES_Counter: {self.counter}')
             if self.counter >= self.patience:
+                print(self.patience)
                 return True
         return False
     
@@ -44,7 +46,7 @@ def train_model(Autoencoder, train_dataloader, val_dataloader, val_dataset, n_in
                             eps=1e-8)
     optimizer.zero_grad()
     # early stopping (if applicable)
-    early_stopper = EarlyStopper(patience=1, min_delta=10)
+    early_stopper = EarlyStopper(patience=5, min_delta=0)
 
     best_loss = np.inf
     train_losses = []
