@@ -23,15 +23,17 @@ def check_params(start_time: int, target_sample_rate: int, window_size: int, int
         raise Exception("Check controller_side!")
 
 
-def preprocess_data(data: np.array, input_rate: int, output_rate: int, start_time: int):
+def preprocess_data(data: np.array, input_rate: int, output_rate: int, start_time: int, end_time: int):
     
     # Drop first few seconds of data
-    n_start = int(input_rate * start_time)
-    data = data[n_start:]
+    n_start = None if int(input_rate * start_time) == 0 else int(input_rate * start_time)
+    n_end = None if -int(input_rate * end_time) == 0 else -int(input_rate * end_time)
+    data = data[n_start:n_end]
 
     # Downsample data rate
     downsampled_data = []
     ratio = math.ceil(input_rate/output_rate)
+    print(f'{ratio=}')
     for i in range(0, len(data)-ratio, ratio):
         downsampled_data.append(np.mean(data[i : i + ratio], axis=0))
     data = np.array(downsampled_data)
@@ -47,7 +49,6 @@ def preprocess_data(data: np.array, input_rate: int, output_rate: int, start_tim
     return data
 
 
-
 def create_windowed_timeseries(raw_timeseries: np.array, data_rate: int, window_size: int, interval: float):
     n_window = int(data_rate * window_size)
     n_interval = int(data_rate * interval)
@@ -60,7 +61,7 @@ def create_windowed_timeseries(raw_timeseries: np.array, data_rate: int, window_
     return np.array(windowed_timeseries)
 
 
-def create_train_test_data(dataset_dir: os.path, input_rate: int, output_rate: int, start_time: int, window_size: int, interval: int, controller_side: str):
+def create_train_test_data(dataset_dir: os.path, input_rate: int, output_rate: int, start_time: int, end_time: int, window_size: int, interval: int, controller_side: str):
     train_X = None
     train_y = None
 
@@ -74,7 +75,7 @@ def create_train_test_data(dataset_dir: os.path, input_rate: int, output_rate: i
                 temp_x = np.genfromtxt(os.path.join(data_directory, file_name), skip_header=True, dtype=float, delimiter=',')
 
                 # Preprocess Data
-                temp_x = preprocess_data(temp_x, input_rate, output_rate, start_time)
+                temp_x = preprocess_data(temp_x, input_rate, output_rate, start_time, end_time)
 
                 # Create Windowed Timeseries
                 temp_x = create_windowed_timeseries(temp_x, output_rate, window_size, interval)
@@ -123,7 +124,8 @@ if __name__ == '__main__':
     ##########################       PARAMETERS       ##########################
     ############################################################################
 
-    start_time = 0                  # Seconds to ignore at the start of each file
+    start_time = 3                  # Seconds to ignore at the start of each file
+    end_time = 5                    # Seconds to ignore at the end of each file
     target_sample_rate = 20         # Downsample data to this rate (Hz)
     window_size = 3                 # Length of window in seconds
     interval = 0.5                  # Time between windows in seconds
@@ -147,7 +149,8 @@ if __name__ == '__main__':
     train_data, train_labels, test_data, test_labels, val_data, val_labels = create_train_test_data(dataset_dir=RAW_DATASET_DIR,
                                                                                 input_rate=RAW_DATA_RATE,
                                                                                 output_rate=target_sample_rate,
-                                                                                start_time=start_time, 
+                                                                                start_time=start_time,
+                                                                                end_time=end_time, 
                                                                                 window_size=window_size,
                                                                                 interval=interval, 
                                                                                 controller_side=controller_side)

@@ -17,13 +17,14 @@ def load_data(fp: str, header=True):
 
 
 if __name__ == "__main__":
-    IMUdata = load_data('Recorded_Movement_Data\Shopping\GREEN_LH_010.csv')  
-    start_idx = 2500
+    IMUdata = load_data('PHYTMO/inertial/upper/A/Larm/A01EAH1_2.csv')  
+    start_idx = 700
+    end_idx = -1000
 
     # Extract Data
-    gyr = IMUdata[start_idx:, (0, 1, 2)].astype('float64')
-    acc = IMUdata[start_idx:, (3, 4, 5)].astype('float64')
-    quat = IMUdata[start_idx:, (6, 7, 8, 9)].astype('float64')
+    gyr = IMUdata[start_idx:end_idx, (1, 2, 3)].astype('float64')
+    acc = IMUdata[start_idx:end_idx, (4, 5, 6)].astype('float64')
+    quat = IMUdata[start_idx:end_idx, (7, 8, 9)].astype('float64')
 
     # Plot
     fig, (ax1, ax2, ax3) = plt.subplots(3)
@@ -36,6 +37,6 @@ if __name__ == "__main__":
     ax2.set_title('Accel Data')
     
     ax3.plot(quat)
-    ax3.set_title('Quat Data')
+    ax3.set_title('Mag Data')
 
     plt.show()
