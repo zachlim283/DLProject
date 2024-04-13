@@ -129,7 +129,7 @@ if __name__ == '__main__':
     target_sample_rate = 20         # Downsample data to this rate (Hz)
     window_size = 3                 # Length of window in seconds
     interval = 0.5                  # Time between windows in seconds
-    controller_side = 'Larm'        # Create dataset for Larm/Lforearm/Rarm/Rforearm
+    controller_side = 'Rarm'        # Create dataset for Larm/Lforearm/Rarm/Rforearm
 
     ############################################################################
     ############################################################################
