@@ -102,8 +102,4 @@ Epoch 48: 0.0055956175069954185
 Epoch 49: 0.005866947060477939
 Epoch 50: 0.005557096040747979
 
-SVM Test Accuracy: 96.74%
-SVM Test Accuracy: 96.86%
-SVM Test Accuracy: 96.86%
-SVM Test Accuracy: 96.74%
-SVM Test Accuracy: 96.95%
+SVM Test Accuracy: 97.28%
