@@ -32,8 +32,8 @@ if __name__ == "__main__":
                 f_path = os.path.join(data_directory, file_name)
 
                 IMUdata = load_data(f_path)  
-                start_idx = 0
-                end_idx = None
+                start_idx = 1000
+                end_idx = -5000
 
                 # Extract Data
                 gyr = IMUdata[start_idx:end_idx, (1, 2, 3)].astype('float64')
