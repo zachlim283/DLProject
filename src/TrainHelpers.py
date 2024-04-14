@@ -4,6 +4,7 @@ import numpy as np
 import torch.nn as nn
 import matplotlib.pyplot as plt
 import torch.optim as optim
+from copy import deepcopy
 from tqdm.notebook import tqdm
 from sklearn import svm
 from sklearn.metrics import accuracy_score
@@ -163,3 +164,105 @@ def train_svm(train_data, train_labels, dataset_ver, tag, encoder_ver):
         pickle.dump(svm_classifier, file)
 
     return svm_classifier
+
+
+def train_TCN(model, train_dataloader, val_dataloader, learning_rate, num_epochs, patience, tag):
+    optimizer = optim.Adam(model.parameters(),
+                            lr=learning_rate,
+                            betas=(0.9, 0.999),
+                            eps=1e-8)
+
+    criterion = nn.CrossEntropyLoss()
+
+    train_losses = []
+    val_losses = []
+
+    best_val_loss = np.inf
+    es_count = 0
+
+    for epoch in range(num_epochs):
+        if es_count < patience:
+            print(f'Starting Epoch {epoch+1}...')
+            model.train()
+
+            train_preds = []
+            train_labels = []
+
+            train_loss = 0
+            for train_X, train_y in tqdm(train_dataloader):
+                optimizer.zero_grad()
+                
+                train_output = model(train_X)
+                
+                train_criterion = criterion(train_output, train_y[0].type(torch.LongTensor))
+                train_criterion.backward()
+                train_loss += train_criterion.item()
+                optimizer.step()
+
+                train_preds.append(torch.argmax(train_output))
+                train_labels.append(train_y)
+
+            model.eval()
+
+            val_preds = []
+            val_labels = []
+
+            val_loss = 0
+            for val_X, val_y in tqdm(val_dataloader):
+                val_output = model(val_X)
+
+                val_criterion = criterion(val_output, val_y[0].type(torch.LongTensor))
+                val_loss += val_criterion.item()
+
+                val_preds.append(torch.argmax(val_output))
+                val_labels.append(val_y)
+
+            train_losses.append(train_loss / len(train_dataloader))
+            print(f'Train Loss = {train_losses[-1]}')
+
+            train_acc = accuracy_score(train_labels, train_preds)
+            print(f'Train Acc = {train_acc}')
+
+            val_losses.append(val_loss / len(val_dataloader))
+            print(f'Val Loss = {val_losses[-1]}')
+
+            val_acc = accuracy_score(val_labels, val_preds)
+            print(f'Val Acc = {val_acc}')
+
+            if val_losses[-1] < best_val_loss:
+                torch.save(deepcopy(model.state_dict()), f'models/TCN_{tag}.pt')
+                best_val_loss = val_losses[-1]
+                es_count = 0
+                continue
+            
+            es_count += 1
+
+        else:
+            print('Early Stopping...')
+            break
+
+    return train_losses, val_losses
+
+
+def test_TCN(model, test_dataloader):
+    model.eval()
+
+    criterion = nn.CrossEntropyLoss()
+    test_preds = []
+    test_labels = []
+
+    test_loss = 0
+    for test_X, test_y in tqdm(test_dataloader):
+        test_output = model(test_X)
+
+        test_criterion = criterion(test_output, test_y[0].type(torch.LongTensor))
+        test_loss += test_criterion.item()
+
+        test_preds.append(torch.argmax(test_output))
+        test_labels.append(test_y)
+
+    test_loss /= len(test_dataloader)
+    print(f'Train Loss = {test_loss}')
+
+    train_acc = accuracy_score(test_labels, test_preds)
+    print(f'Train Acc = {train_acc}')
