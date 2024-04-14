@@ -13,9 +13,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def test_model(test_dataloader, dataset_ver, tag, encoder_ver):
 
     # Load the saved models
-    encoder = torch.load(f'ML_Models/{dataset_ver}_{encoder_ver}_{tag}_Autoencoder.pt')
+    encoder = torch.load(f'models/{dataset_ver}_{encoder_ver}_{tag}_Autoencoder.pt')
     encoder.eval()
-    with open(f'ML_Models/{dataset_ver}_{encoder_ver}_{tag}_svm_classifier.pkl', 'rb') as file:
+    with open(f'models/{dataset_ver}_{encoder_ver}_{tag}_svm_classifier.pkl', 'rb') as file:
         svm_classifier = pickle.load(file)
 
     test_encoded_data = []

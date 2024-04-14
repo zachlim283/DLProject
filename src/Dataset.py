@@ -3,8 +3,8 @@ import numpy as np
 
 class CustomDataset(torch.utils.data.Dataset):
     def __init__(self, dataset_type, dataset_ver):
-        self.X = np.array(np.load(f'Generated_Datasets/{dataset_type}_data_{dataset_ver}.npy'))
-        self.y = np.array(np.load(f'Generated_Datasets/{dataset_type}_labels_{dataset_ver}.npy'))
+        self.X = np.array(np.load(f'input/{dataset_type}_data_{dataset_ver}.npy'))
+        self.y = np.array(np.load(f'input/{dataset_type}_labels_{dataset_ver}.npy'))
 
     def __len__(self):
         return len(self.X)

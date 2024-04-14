@@ -1,5 +1,4 @@
-.env
+.venv
 Generated_Datasets
-ML_Models
-tensorboard
+input\PHYTMO
 images

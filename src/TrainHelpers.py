@@ -86,9 +86,9 @@ def train_model(Autoencoder, train_dataloader, val_dataloader, val_dataset, n_in
             best_loss = val_losses[-1]
 
             # Save Encoder
-            torch.save(autoencoder.encoder, f'ML_Models/{dataset_ver}_{encoder_ver}_{tag}_encoder.pt')
+            torch.save(autoencoder.encoder, f'models/{dataset_ver}_{encoder_ver}_{tag}_encoder.pt')
             # Save Full Autoencoder
-            torch.save(autoencoder, f'ML_Models/{dataset_ver}_{encoder_ver}_{tag}_Autoencoder.pt')
+            torch.save(autoencoder, f'models/{dataset_ver}_{encoder_ver}_{tag}_Autoencoder.pt')
         
         if early_stop and early_stopper.early_stop(val_losses[-1]):
             print("Early Stopping...")             
@@ -122,7 +122,7 @@ def plot_loss_graph(train_losses, val_losses, tag):
 
 def encode_data(train_dataloader, dataset_ver, tag, encoder_ver):
     print('Loading Encoder Model...')
-    encoder = torch.load(f'ML_Models/{dataset_ver}_{encoder_ver}_{tag}_encoder.pt').to(device)
+    encoder = torch.load(f'models/{dataset_ver}_{encoder_ver}_{tag}_encoder.pt').to(device)
     encoder.eval()
 
     encoded_data = []
@@ -159,7 +159,7 @@ def train_svm(train_data, train_labels, dataset_ver, tag, encoder_ver):
     print(f'Accuracy: {accuracy_score(y_test, test_pred)}')
 
     # Save SVM Classifier
-    with open(f'ML_Models/{dataset_ver}_{encoder_ver}_{tag}_svm_classifier.pkl', "wb") as file:
+    with open(f'models/{dataset_ver}_{encoder_ver}_{tag}_svm_classifier.pkl', "wb") as file:
         pickle.dump(svm_classifier, file)
 
     return svm_classifier
