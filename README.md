@@ -24,6 +24,7 @@
 
 # File Directories
 ```
+┣ 📂 images                # stores all plotted loss graphs + confusion matrices
 ┣ 📂 input                 # stores all input data
 ┣ 📂 logs                  # stores all training logs
 ┣ 📂 models                # stores all trained model weights

@@ -1,6 +1,5 @@
 .venv
 Generated_Datasets
 input\PHYTMO
-images
 ML_Models
 old_tensorboard
