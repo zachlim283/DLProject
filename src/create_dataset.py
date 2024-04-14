@@ -96,7 +96,7 @@ def generate_datasets(RAW_DATASET_DIR=os.path.join(".", "input", "PHYTMO")):
 
                     print(f'Completed {file_name}, {train_X.shape=}, {train_y.shape=}')
         
-        print("Splitting dataset into train-test-val of 80-20-10 ratio...")
+        print("Splitting dataset into train-test-val of 70-20-10 ratio...")
         # Split the data and labels into training and temporary set
         X_train_val, X_test, Y_train_val, Y_test = train_test_split(train_X, train_y, test_size=0.2, random_state=42)
         # Split the temporary set into training and validation
